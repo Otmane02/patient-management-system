@@ -1,0 +1,14 @@
+### PUT request to example server
+PUT http://localhost:4000/patients/223e4567-e89b-12d3-a456-426614174005
+Content-Type: application/json
+
+{
+  "name": "otmane",
+  "email": "dhdhd",
+
+  "address": "Laatatra sidi bennour"
+}
+
+
+
+###
