@@ -4,6 +4,7 @@ import com.aababou.patientservice.dto.PatientRequestDto;
 import com.aababou.patientservice.dto.PatientResponseDto;
 import com.aababou.patientservice.exception.EmailAlreadyExistException;
 import com.aababou.patientservice.exception.PatientNotFoundException;
+import com.aababou.patientservice.grpc.BillingServiceGrpcClient;
 import com.aababou.patientservice.mapper.PatientMapper;
 import com.aababou.patientservice.model.Patient;
 import com.aababou.patientservice.repository.PatientRepository;
@@ -21,8 +22,10 @@ author otman
 public class PatientService {
 
     private final PatientRepository patientRepository;
-    public PatientService(PatientRepository patientRepository) {
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
+    public PatientService(PatientRepository patientRepository,BillingServiceGrpcClient billingServiceGrpcClient) {
         this.patientRepository = patientRepository;
+        this.billingServiceGrpcClient = billingServiceGrpcClient;
     }
 
 
@@ -38,6 +41,8 @@ public class PatientService {
         }
         Patient   newPatient= patientRepository.save(
                 PatientMapper.toModel(patientRequestDto));
+
+        billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),newPatient.getName(),newPatient.getEmail());
 
     return PatientMapper.toDto(newPatient);
     }

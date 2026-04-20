@@ -3,7 +3,7 @@ GRPC localhost:9001/BillingService/CreateBillingAccount
 
 {
   "patientId": "1245",
-  "name": "Otmane",
-  "email": "Otmaneaababou@hotmail.com"
+  "name": "Felouss",
+  "email": "felo@hotmail.com"
 
 }
