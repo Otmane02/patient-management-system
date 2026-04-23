@@ -5,10 +5,10 @@ import com.aababou.patientservice.dto.PatientResponseDto;
 import com.aababou.patientservice.exception.EmailAlreadyExistException;
 import com.aababou.patientservice.exception.PatientNotFoundException;
 import com.aababou.patientservice.grpc.BillingServiceGrpcClient;
+import com.aababou.patientservice.kafka.KafkaProducer;
 import com.aababou.patientservice.mapper.PatientMapper;
 import com.aababou.patientservice.model.Patient;
 import com.aababou.patientservice.repository.PatientRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,9 +23,12 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
-    public PatientService(PatientRepository patientRepository,BillingServiceGrpcClient billingServiceGrpcClient) {
+    private final KafkaProducer kafkaProducer;
+
+    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient, KafkaProducer kafkaProducer) {
         this.patientRepository = patientRepository;
         this.billingServiceGrpcClient = billingServiceGrpcClient;
+        this.kafkaProducer = kafkaProducer;
     }
 
 
@@ -43,6 +46,8 @@ public class PatientService {
                 PatientMapper.toModel(patientRequestDto));
 
         billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),newPatient.getName(),newPatient.getEmail());
+
+        kafkaProducer.sendEvent(newPatient);
 
     return PatientMapper.toDto(newPatient);
     }
