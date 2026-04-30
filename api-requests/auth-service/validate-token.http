@@ -1,0 +1,2 @@
+#validate_token
+GET  http://localhost:4004/api/auth/validate
